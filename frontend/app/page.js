@@ -186,28 +186,6 @@ export default function HomePage() {
       </div>
 
       <style jsx>{`
-        .page-wrapper {
-          min-height: 100vh;
-          background: #020617;
-        }
-
-        .landing-page {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          padding: 40px 0;
-          max-width: 1000px;
-          margin: 0 auto;
-          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-          box-shadow: 0 0 50px rgba(0,0,0,0.5);
-        }
-
-        @media (max-width: 1000px) {
-          .landing-page {
-            max-width: 100%;
-          }
-        }
-
         .hero {
           width: 100%;
         }

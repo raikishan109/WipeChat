@@ -165,29 +165,6 @@ export default function LoginPage() {
         </div>
 
         <style jsx>{`
-          .login-page-wrapper {
-            min-height: 100vh;
-            background: #020617;
-          }
-
-          .login-page {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            max-width: 1000px;
-            margin: 0 auto;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-          }
-
-          @media (max-width: 1000px) {
-            .login-page {
-              max-width: 100%;
-            }
-          }
-
           .login-container {
             width: 100%;
             max-width: 340px;
