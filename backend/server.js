@@ -4,6 +4,9 @@
  */
 
 require('dotenv').config();
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']); // Use Google DNS for resolving SRV records
+dns.setDefaultResultOrder('ipv4first');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -55,7 +58,7 @@ async function cleanupOldData() {
 
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/privatechat';
+const MONGODB_URI = (process.env.MONGODB_URI || 'mongodb://localhost:27017/privatechat').trim();
 mongoose.connect(MONGODB_URI)
     .then(async () => {
         console.log('✅ MongoDB connected');

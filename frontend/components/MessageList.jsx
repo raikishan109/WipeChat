@@ -21,10 +21,10 @@ export default function MessageList({ messages, currentUsername, onDownloadFile 
 
     return (
         <div className="message-list">
-            {messages.map((message) => {
+            {messages.map((message, index) => {
                 if (message.type === 'system') {
                     return (
-                        <div key={message.id} className="system-message fade-in">
+                        <div key={message._id || message.id || index} className="system-message fade-in">
                             <span className="system-text">{message.text}</span>
                         </div>
                     );
@@ -34,7 +34,7 @@ export default function MessageList({ messages, currentUsername, onDownloadFile 
 
                 if (message.type === 'file') {
                     return (
-                        <div key={message.id} className={`message fade-in ${isOwn ? 'own' : 'other'}`}>
+                        <div key={message._id || message.id || index} className={`message fade-in ${isOwn ? 'own' : 'other'}`}>
                             <div className="message-bubble file-message">
                                 <div className="message-header">
                                     <span className="username">{message.username}</span>
@@ -64,7 +64,7 @@ export default function MessageList({ messages, currentUsername, onDownloadFile 
                 }
 
                 return (
-                    <div key={message.id} className={`message fade-in ${isOwn ? 'own' : 'other'}`}>
+                    <div key={message._id || message.id || index} className={`message fade-in ${isOwn ? 'own' : 'other'}`}>
                         <div className="message-bubble">
                             <div className="message-header">
                                 <span className="username">{message.username}</span>

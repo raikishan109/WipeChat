@@ -249,88 +249,105 @@ export default function ChatPage() {
   const typingUsersArray = Array.from(typingUsers).filter(u => u !== username);
 
   return (
-    <div className="chat-page">
-      {/* Header */}
-      <div className="chat-header glass">
-        <div className="header-left">
-          <button className="btn-back" onClick={() => router.push('/')}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" />
-            </svg>
-            <span>Back</span>
-          </button>
-          <div className="room-info">
-            <h2 className="room-code" onClick={copyCodeToClipboard} title="Click to copy">
-              🔒 {chatCode}
-            </h2>
-            <p className="room-status">
-              {isConnecting ? (
-                <span className="connecting">Connecting...</span>
-              ) : (
-                <span className="connected">
-                  <span className="status-dot"></span>
-                  {userCount} {userCount === 1 ? 'user' : 'users'} online
+    <div className="chat-page-wrapper">
+      <div className="chat-page">
+        {/* Header */}
+        <div className="chat-header glass">
+          <div className="header-left">
+            <button className="btn-back" onClick={() => router.push('/')}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" />
+              </svg>
+              <span>Back</span>
+            </button>
+            <div className="room-info">
+              <h2 className="room-code" onClick={copyCodeToClipboard} title="Click to copy">
+                🔒 {chatCode}
+              </h2>
+              <p className="room-status">
+                {isConnecting ? (
+                  <span className="connecting">Connecting...</span>
+                ) : (
+                  <span className="connected">
+                    <span className="status-dot"></span>
+                    {userCount} {userCount === 1 ? 'user' : 'users'} online
+                  </span>
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="header-right">
+            <Timer timeRemaining={timeRemaining} />
+            <button className="btn-delete" onClick={deleteRoom} title="Delete Room">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              <span>Delete Room</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="chat-messages">
+          <MessageList messages={messages} currentUsername={username} onDownloadFile={downloadFile} />
+
+          {/* Typing Indicator */}
+          {typingUsersArray.length > 0 && (
+            <div className="typing-indicator">
+              <span className="typing-text">
+                {typingUsersArray.join(', ')} {typingUsersArray.length === 1 ? 'is' : 'are'} typing
+                <span className="typing-dots">
+                  <span>.</span><span>.</span><span>.</span>
                 </span>
-              )}
-            </p>
-          </div>
-        </div>
-        <div className="header-right">
-          <Timer timeRemaining={timeRemaining} />
-          <button className="btn-delete" onClick={deleteRoom} title="Delete Room">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-            <span>Delete Room</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="chat-messages">
-        <MessageList messages={messages} currentUsername={username} onDownloadFile={downloadFile} />
-
-        {/* Typing Indicator */}
-        {typingUsersArray.length > 0 && (
-          <div className="typing-indicator">
-            <span className="typing-text">
-              {typingUsersArray.join(', ')} {typingUsersArray.length === 1 ? 'is' : 'are'} typing
-              <span className="typing-dots">
-                <span>.</span><span>.</span><span>.</span>
               </span>
-            </span>
-          </div>
-        )}
+            </div>
+          )}
 
-        <div ref={messagesEndRef} />
-      </div>
+          <div ref={messagesEndRef} />
+        </div>
 
-      {/* Input */}
-      <div className="chat-input glass">
-        <FileUpload onFileSelect={handleFileUpload} disabled={isConnecting} />
-        <form onSubmit={sendMessage} className="message-form">
-          <input
-            type="text"
-            className="input message-input"
-            placeholder="Type a message..."
-            value={inputMessage}
-            onChange={handleInputChange}
-            disabled={isConnecting}
-          />
-          <button type="submit" className="btn btn-primary send-btn" disabled={isConnecting || !inputMessage.trim()}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-            </svg>
-          </button>
-        </form>
+        {/* Input */}
+        <div className="chat-input glass">
+          <FileUpload onFileSelect={handleFileUpload} disabled={isConnecting} />
+          <form onSubmit={sendMessage} className="message-form">
+            <input
+              type="text"
+              className="input message-input"
+              placeholder="Type a message..."
+              value={inputMessage}
+              onChange={handleInputChange}
+              disabled={isConnecting}
+            />
+            <button type="submit" className="btn btn-primary send-btn" disabled={isConnecting || !inputMessage.trim()}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
 
       <style jsx>{`
+        .chat-page-wrapper {
+          min-height: 100vh;
+          background: #020617; /* Dark background for the sides */
+        }
+
         .chat-page {
           height: 100vh;
           display: flex;
           flex-direction: column;
           background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          max-width: 1000px;
+          margin: 0 auto;
+          box-shadow: 0 0 50px rgba(0,0,0,0.5);
+          position: relative;
+        }
+
+        @media (max-width: 1000px) {
+          .chat-page {
+            max-width: 100%;
+          }
         }
 
         .chat-header {
@@ -549,12 +566,19 @@ export default function ChatPage() {
 
         @media (max-width: 768px) {
           .chat-header {
-            padding: 12px 16px;
-            flex-wrap: wrap;
+            padding: 8px 12px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+          }
+
+          .header-left {
+            gap: 8px;
           }
 
           .header-right {
-            flex-wrap: wrap;
             gap: 8px;
           }
 
@@ -565,19 +589,68 @@ export default function ChatPage() {
 
           .btn-delete,
           .btn-back {
-            padding: 10px;
+            padding: 8px;
+            min-width: 40px;
+            justify-content: center;
+          }
+
+          .room-info {
+            gap: 2px;
+            text-align: center;
+            overflow: hidden;
           }
 
           .room-code {
-            font-size: 14px;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+            margin: 0 auto;
+          }
+
+          .room-status {
+            font-size: 11px;
+            justify-content: center;
+          }
+
+          .status-dot {
+            width: 6px;
+            height: 6px;
           }
 
           .chat-messages {
-            padding: 16px;
+            padding: 12px;
           }
 
           .chat-input {
-            padding: 12px 16px;
+            padding: 10px 12px;
+            gap: 8px;
+          }
+
+          .message-form {
+            gap: 8px;
+          }
+
+          .message-input {
+            font-size: 16px; /* Prevents iOS zoom */
+            padding: 10px 12px;
+          }
+
+          .send-btn {
+            padding: 10px;
+            min-width: 44px;
+          }
+        }
+
+        /* Extremely small screens */
+        @media (max-width: 360px) {
+          .room-code {
+            max-width: 80px;
+          }
+          
+          .header-right :global(.timer-text) {
+             font-size: 12px;
           }
         }
       `}</style>
