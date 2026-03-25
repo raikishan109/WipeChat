@@ -1,0 +1,17 @@
+{
+  "name": "WipeChat",
+  "short_name": "WipeChat",
+  "description": "Secure, anonymous, temporary chat platform with 24-hour auto-delete.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "orientation": "portrait"
+}

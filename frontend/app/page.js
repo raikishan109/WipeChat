@@ -446,14 +446,15 @@ export default function HomePage() {
           }
 
           .hero-title {
-            font-size: 24px;
+            font-size: 28px;
             margin-top: 10px;
             text-align: center;
             width: 100%;
+            line-height: 1.2;
           }
 
           .hero-subtitle {
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 24px;
             line-height: 1.5;
             padding: 0 10px;
@@ -471,8 +472,8 @@ export default function HomePage() {
           }
 
           .feature-icon {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
           }
           
           .feature-icon svg {
@@ -481,7 +482,7 @@ export default function HomePage() {
           }
 
           .feature-text {
-            font-size: 9px;
+            font-size: 10px;
             line-height: 1.2;
             white-space: nowrap;
           }
@@ -518,8 +519,8 @@ export default function HomePage() {
           }
 
           .btn {
-            font-size: 14px;
-            padding: 10px;
+            font-size: 15px;
+            padding: 12px;
             justify-content: center;
           }
 
