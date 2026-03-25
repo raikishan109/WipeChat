@@ -89,7 +89,7 @@ mongoose.connect(MONGODB_URI)
 app.get('/', (req, res) => {
     res.json({
         status: 'ok',
-        message: 'TempChat Backend API is running! 🚀',
+        message: 'WipeChat Backend API is running! 🚀',
         version: '1.0.0',
         endpoints: {
             auth: '/api/auth/login, /api/auth/signup',

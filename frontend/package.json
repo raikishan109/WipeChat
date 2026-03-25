@@ -1,7 +1,7 @@
 {
-    "name": "tempchat-frontend",
+    "name": "wipechat-frontend",
     "version": "1.0.0",
-    "description": "TempChat - Frontend (Next.js)",
+    "description": "WipeChat - Frontend (Next.js)",
     "scripts": {
         "dev": "next dev",
         "build": "next build",

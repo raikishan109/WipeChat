@@ -1,7 +1,7 @@
 {
-    "name": "tempchat-backend",
+    "name": "wipechat-backend",
     "version": "1.0.0",
-    "description": "TempChat - Backend (Socket.io + MongoDB)",
+    "description": "WipeChat - Backend (Socket.io + MongoDB)",
     "main": "server.js",
     "scripts": {
         "start": "node server.js",

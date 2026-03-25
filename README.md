@@ -1,16 +1,16 @@
-# 🚀 TempChat Application
+# 🚀 WipeChat Application
 
 A real-time, privacy-focused chat application built with Next.js, Express, Socket.io, and MongoDB.
 
 ## 📁 Clean Project Structure
 
 ```
-TempChat/
+WipeChat/
 ├── frontend/          # Next.js frontend application
 ├── backend/           # Express + Socket.io backend server
 ├── README.md          # This file
 ├── DEPLOYMENT.md      # Deployment guide
-└── PROJECT_STRUCTURE.md  # Detailed structure docs
+├── PROJECT_STRUCTURE.md  # Detailed structure docs
 ```
 
 **That's it! Clean and simple.** ✨

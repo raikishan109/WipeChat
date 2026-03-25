@@ -102,21 +102,26 @@ export default function Timer({ timeRemaining: initialTime }) {
           border-radius: 2px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 640px) {
           .timer {
-            padding: 8px 12px;
+            padding: 6px 10px;
+            gap: 8px;
           }
 
           .timer-icon {
-            font-size: 20px;
+            font-size: 18px;
+          }
+
+          .timer-label, .timer-bar {
+            display: none;
+          }
+
+          .timer-content {
+            gap: 0;
           }
 
           .timer-value {
-            font-size: 14px;
-          }
-
-          .timer-bar {
-            width: 80px;
+            font-size: 13px;
           }
         }
       `}</style>
