@@ -69,8 +69,10 @@ export default function HomePage() {
                 <div className="user-section">
                   <span className="welcome-text">Welcome, {user.username.split('@')[0]}!</span>
                   <button className="btn btn-secondary btn-logout" onClick={handleLogout}>
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                      <polyline points="16 17 21 12 16 7"></polyline>
+                      <line x1="21" y1="12" x2="9" y2="12"></line>
                     </svg>
                     <span>Logout</span>
                   </button>
@@ -84,9 +86,9 @@ export default function HomePage() {
                 Anonymous, Encrypted, <span className="gradient-text">Temporary Chat</span>
               </h1>
               <p className="hero-subtitle">
-                Secure login. Real-time messaging. Auto-delete after 24 hours.
-                <br />
-                Just create an account and start chatting!
+                <span className="subtitle-line">Secure login. Real-time messaging.</span>
+                <span className="subtitle-line">Auto-delete after 24 hours.</span>
+                <span className="subtitle-line">Just create an account and start chatting!</span>
               </p>
 
               {/* Features */}
@@ -198,6 +200,11 @@ export default function HomePage() {
                     Your data is automatically deleted after 24 hours.
                   </p>
                 </div>
+              </div>
+
+              {/* Footer */}
+              <div className="footer-copyright fade-in" style={{ animationDelay: '0.3s' }}>
+                <p>© 2026 WipeChat. All rights reserved.</p>
               </div>
             </div>
           </div>
@@ -381,6 +388,19 @@ export default function HomePage() {
           font-size: 14px;
         }
 
+        .footer-copyright {
+          margin-top: 80px;
+          padding-top: 32px;
+          text-align: center;
+          border-top: 1px solid var(--border);
+          opacity: 0.6;
+        }
+
+        .footer-copyright p {
+          font-size: 14px;
+          color: var(--text-muted);
+        }
+
         .spinner {
           display: inline-block;
           width: 16px;
@@ -447,10 +467,15 @@ export default function HomePage() {
 
           .hero-title {
             font-size: 28px;
+            font-weight: 800;
             margin-top: 10px;
             text-align: center;
             width: 100%;
             line-height: 1.2;
+          }
+
+          .gradient-text {
+            font-weight: 800;
           }
 
           .hero-subtitle {
@@ -458,6 +483,11 @@ export default function HomePage() {
             margin-bottom: 24px;
             line-height: 1.5;
             padding: 0 10px;
+          }
+
+          .subtitle-line {
+            display: block;
+            margin-bottom: 4px;
           }
 
           .features {
