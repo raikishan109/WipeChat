@@ -9,6 +9,7 @@ export default function HomePage() {
   const [chatCode, setChatCode] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [user, setUser] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
@@ -19,6 +20,16 @@ export default function HomePage() {
       setUser(JSON.parse(storedUser));
     }
   }, [router]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfile && !event.target.closest('.user-section')) {
+        setShowProfile(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfile]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -67,8 +78,50 @@ export default function HomePage() {
                   <span className="logo-text"><span className="white-text">Wipe</span>Chat</span>
                 </div>
                 <div className="user-section">
-                  <span className="welcome-text">Welcome, {user.username.split('@')[0]}!</span>
-                  <button className="btn btn-secondary btn-logout" onClick={handleLogout}>
+                  <div className="profile-wrapper">
+                    <button 
+                      className={`profile-trigger ${showProfile ? 'active' : ''}`}
+                      onClick={() => setShowProfile(!showProfile)}
+                      title="Profile Details"
+                    >
+                      <div className="avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.9 }}>
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                      </div>
+                    </button>
+
+                    {showProfile && (
+                      <div className="profile-dropdown fade-in">
+                        <div className="dropdown-header">
+                          <div className="dropdown-avatar">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.9 }}>
+                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                              <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                          </div>
+                          <div className="user-info">
+                            <span className="user-label">Account</span>
+                            <span className="user-name">{user.username.split('@')[0]}</span>
+                          </div>
+                        </div>
+                        <div className="dropdown-divider"></div>
+                        <div className="dropdown-details">
+                          <div className="detail-item">
+                            <span className="detail-label">Status</span>
+                            <span className="detail-value text-green">Online</span>
+                          </div>
+                          <div className="detail-item">
+                            <span className="detail-label">Chat Limit</span>
+                            <span className="detail-value">24 Hours</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <button className="btn btn-secondary btn-logout" onClick={handleLogout} title="Logout">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                       <polyline points="16 17 21 12 16 7"></polyline>
@@ -255,15 +308,156 @@ export default function HomePage() {
           gap: 16px;
         }
 
-        .welcome-text {
-          font-size: 14px;
+        .profile-wrapper {
+          position: relative;
+        }
+
+        .profile-trigger {
+          background: none;
+          border: 2px solid var(--border);
+          padding: 4px;
+          border-radius: 50%;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          outline: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .profile-trigger:hover, .profile-trigger.active {
+          border-color: var(--primary);
+          transform: scale(1.05);
+        }
+
+        .avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 16px;
+          line-height: 1;
+          padding: 0;
+          box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .profile-dropdown {
+          position: absolute;
+          top: calc(100% + 12px);
+          right: 0;
+          width: 240px;
+          background: #0f172a;
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          padding: 16px;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+          z-index: 1000;
+          backdrop-filter: blur(20px);
+        }
+
+        .dropdown-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 16px;
+        }
+
+        .dropdown-avatar {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+          border: 1px solid rgba(99, 102, 241, 0.3);
+          color: var(--primary-light);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 20px;
+        }
+
+        .user-info {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .user-label {
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--text-muted);
+          font-weight: 600;
+        }
+
+        .user-name {
+          font-size: 16px;
+          font-weight: 700;
+          color: white;
+        }
+
+        .dropdown-divider {
+          height: 1px;
+          background: var(--border);
+          margin: 12px 0;
+          opacity: 0.5;
+        }
+
+        .dropdown-details {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .detail-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .detail-label {
+          font-size: 13px;
+          color: var(--text-muted);
+        }
+
+        .detail-value {
+          font-size: 13px;
+          font-weight: 600;
           color: var(--text-secondary);
-          font-weight: 500;
+        }
+
+        .text-green {
+          color: #10b981;
         }
 
         .btn-logout {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           padding: 8px 16px;
           font-size: 14px;
+          font-weight: 600;
+          border-radius: 12px;
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.2);
+          color: #ef4444;
+          transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+          background: #ef4444 !important;
+          color: white !important;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-logout svg {
+          stroke: currentColor;
         }
 
         .hero-content {
@@ -273,7 +467,7 @@ export default function HomePage() {
 
         .hero-title {
           font-size: 56px;
-          font-weight: 800;
+          font-weight: 900;
           line-height: 1.2;
           margin-bottom: 20px;
           text-align: center;
@@ -284,6 +478,7 @@ export default function HomePage() {
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
+          font-weight: 900;
         }
 
         .hero-subtitle {
@@ -430,44 +625,43 @@ export default function HomePage() {
             align-items: center;
             gap: 8px;
             width: 100%;
-            overflow: hidden;
+            position: relative;
+            z-index: 1001;
           }
 
           .user-section {
             width: auto;
-            flex-direction: row;
+            display: flex;
+            align-items: center;
             gap: 8px;
-          }
-
-          .welcome-text {
-            display: block;
-            font-size: 12px;
-            max-width: 100px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-
-          .logo-text {
-            display: none;
-          }
-
-          .btn-logout {
-            padding: 6px 12px;
-            font-size: 12px;
           }
 
           .btn-logout span {
             display: none;
           }
 
-          .btn-logout svg {
-            margin: 0;
+          .btn-logout {
+            padding: 8px;
+            min-width: 40px;
+            justify-content: center;
+          }
+
+          .profile-dropdown {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            margin-left: -120px; /* Centering without transform to avoid animation conflict */
+            right: auto;
+            bottom: auto;
+            width: 240px;
+            margin-top: 0;
+            margin-bottom: 0;
+            z-index: 1100;
           }
 
           .hero-title {
             font-size: 28px;
-            font-weight: 800;
+            font-weight: 900;
             margin-top: 10px;
             text-align: center;
             width: 100%;
@@ -475,7 +669,7 @@ export default function HomePage() {
           }
 
           .gradient-text {
-            font-weight: 800;
+            font-weight: 900;
           }
 
           .hero-subtitle {
