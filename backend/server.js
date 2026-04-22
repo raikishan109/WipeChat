@@ -219,6 +219,13 @@ app.post('/api/auth/guest', async (req, res) => {
             displayName: guestUsername
         });
 
+        // Update persistent total users count
+        await Stats.findOneAndUpdate(
+            { key: 'total_users' },
+            { $inc: { value: 1 } },
+            { upsert: true, new: true }
+        );
+
         res.json({
             success: true,
             user: {
