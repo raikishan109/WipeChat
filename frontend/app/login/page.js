@@ -439,22 +439,26 @@ export default function LoginPage() {
 
           /* Desktop only sizing */
           @media (min-width: 481px) {
+            .login-container {
+              max-width: 380px;
+              margin-top: 20px;
+            }
             .input {
-              padding: 9px 12px;
-              font-size: 14px;
+              padding: 11px 16px;
+              font-size: 15px;
             }
             .btn {
-              padding: 10px 16px;
-              font-size: 14px;
+              padding: 11px 20px;
+              font-size: 15px;
             }
             .form-card {
-              padding: 20px;
+              padding: 24px;
             }
             .form-header h2 {
-              font-size: 22px;
+              font-size: 24px;
             }
             .auth-form {
-              gap: 14px;
+              gap: 16px;
             }
           }
 
