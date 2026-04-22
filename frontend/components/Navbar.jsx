@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
 
@@ -12,8 +13,12 @@ export default function Navbar() {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
     }
+  }, [pathname]);
 
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (showProfile && !event.target.closest('.user-section')) {
         setShowProfile(false);
