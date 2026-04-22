@@ -86,8 +86,12 @@ mongoose.connect(MONGODB_URI)
 // Get stats
 app.get('/api/stats/users', async (req, res) => {
     try {
-        const stats = await Stats.findOne({ key: 'total_users' });
-        res.json({ totalUsers: stats ? stats.value : 0 }); 
+        let stats = await Stats.findOne({ key: 'total_users' });
+        // If no stats found (new deployment), initialize with 6
+        if (!stats) {
+            stats = await Stats.create({ key: 'total_users', value: 6 });
+        }
+        res.json({ totalUsers: stats.value });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
