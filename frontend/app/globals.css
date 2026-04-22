@@ -406,10 +406,11 @@ body {
 
 .chat-page {
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - 64px);
   min-height: auto;
   align-items: stretch;
   justify-content: flex-start;
+  overflow: hidden;
 }
 
 @media (max-width: 1000px) {
