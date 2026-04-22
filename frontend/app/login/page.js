@@ -429,6 +429,27 @@ export default function LoginPage() {
             to { transform: rotate(360deg); }
           }
 
+          /* Desktop only sizing */
+          @media (min-width: 481px) {
+            .input {
+              padding: 9px 12px;
+              font-size: 14px;
+            }
+            .btn {
+              padding: 10px 16px;
+              font-size: 14px;
+            }
+            .form-card {
+              padding: 20px;
+            }
+            .form-header h2 {
+              font-size: 22px;
+            }
+            .auth-form {
+              gap: 14px;
+            }
+          }
+
           @media (max-width: 480px) {
             .login-page {
               padding: 0px;
@@ -443,6 +464,8 @@ export default function LoginPage() {
 
             .login-container {
                padding: 16px 12px;
+               width: 90%;
+               max-width: 320px;
             }
 
             .logo-section {

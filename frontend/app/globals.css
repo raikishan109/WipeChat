@@ -371,13 +371,31 @@ body {
 }
 
 /* Global Page Layout Wrappers (Fixes FOUC) */
-.login-page-wrapper, .page-wrapper, .chat-page-wrapper {
+.login-page-wrapper {
+  height: 100vh;
+  overflow: hidden;
+  background: #020617;
+}
+
+.page-wrapper, .chat-page-wrapper {
   min-height: 100vh;
   background: #020617;
   padding-top: 64px; /* Space for fixed navbar */
 }
 
-.login-page, .landing-page, .chat-page {
+.login-page {
+  height: 100%;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  width: 100%;
+}
+
+.landing-page, .chat-page {
   min-height: 100vh;
   display: flex !important;
   align-items: center;
