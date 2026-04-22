@@ -181,14 +181,12 @@ export default function LoginPage() {
           </div>
           
           {/* User Count Stats */}
-          {totalUsers > 0 && (
-            <div className="user-stats fade-in" style={{ animationDelay: '0.4s' }}>
-              <div className="stats-badge">
-                <span className="pulse-dot"></span>
-                <span className="stats-text"><span className="count-highlight">{totalUsers.toLocaleString()}</span> users have used WipeChat</span>
-              </div>
+          <div className="user-stats fade-in" style={{ animationDelay: '0.4s' }}>
+            <div className="stats-badge">
+              <span className="pulse-dot"></span>
+              <span className="stats-text"><span className="count-highlight">{totalUsers.toLocaleString()}</span> users have used WipeChat</span>
             </div>
-          )}
+          </div>
         </div>
 
         <style jsx>{`

@@ -372,8 +372,7 @@ body {
 
 /* Global Page Layout Wrappers (Fixes FOUC) */
 .login-page-wrapper {
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
   background: #020617;
 }
 
