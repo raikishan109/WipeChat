@@ -374,6 +374,7 @@ body {
 .login-page-wrapper, .page-wrapper, .chat-page-wrapper {
   min-height: 100vh;
   background: #020617;
+  padding-top: 64px; /* Space for fixed navbar */
 }
 
 .login-page, .landing-page, .chat-page {

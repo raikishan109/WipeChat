@@ -1,5 +1,6 @@
 import StyledJsxRegistry from '../lib/registry'
 import './globals.css'
+import Navbar from '../components/Navbar'
 
 export const metadata = {
     title: 'WipeChat - Temporary Anonymous Chat',
@@ -33,7 +34,10 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en" suppressHydrationWarning>
             <body suppressHydrationWarning>
-                <StyledJsxRegistry>{children}</StyledJsxRegistry>
+                <StyledJsxRegistry>
+                    <Navbar />
+                    {children}
+                </StyledJsxRegistry>
                 <script
                   dangerouslySetInnerHTML={{
                     __html: `
