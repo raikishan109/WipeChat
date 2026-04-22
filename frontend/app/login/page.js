@@ -472,8 +472,8 @@ export default function LoginPage() {
 
             .login-container {
                padding: 16px 12px;
-               width: 92%;
-               max-width: 340px;
+               width: 95%;
+               max-width: 360px;
             }
 
             .logo-section {
