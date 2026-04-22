@@ -12,7 +12,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { User, Room, Message } = require('./models');
+const { User, Room, Message, Stats } = require('./models');
 
 const app = express();
 const server = http.createServer(app);
