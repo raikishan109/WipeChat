@@ -407,6 +407,13 @@ export default function LoginPage() {
           @media (max-width: 480px) {
             .login-page {
               padding: 0px;
+              height: 100dvh;
+              overflow: hidden;
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
             }
 
             .login-container {
