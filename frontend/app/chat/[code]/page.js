@@ -642,25 +642,46 @@ export default function ChatPage() {
         }
 
         .chat-input {
-          padding: 16px 24px;
+          padding: 12px 16px;
           border-top: 1px solid var(--border);
           display: flex;
+          align-items: center;
           gap: 12px;
+          background: rgba(15, 23, 42, 0.9);
+          backdrop-filter: blur(20px);
         }
 
         .message-form {
           flex: 1;
           display: flex;
-          gap: 12px;
+          align-items: center;
+          gap: 8px;
         }
 
         .message-input {
           flex: 1;
           margin: 0;
+          background: var(--bg-tertiary);
+          border: 1px solid var(--border);
+          border-radius: 24px;
+          padding: 10px 16px;
         }
 
         .send-btn {
-          padding: 12px 20px;
+          width: 42px;
+          height: 42px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          flex-shrink: 0;
+          background: var(--primary);
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .send-btn svg {
+          margin-left: 2px; /* Slight offset for paper plane icon alignment */
         }
 
         .error-page {
