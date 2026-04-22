@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -12,6 +12,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [totalUsers, setTotalUsers] = useState(0);
+
+  useEffect(() => {
+    // Fetch total users count
+    fetch(`${SERVER_URL}/api/stats/users`)
+      .then(res => res.json())
+      .then(data => setTotalUsers(data.totalUsers))
+      .catch(err => console.error('Failed to fetch user count:', err));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -218,6 +227,16 @@ export default function LoginPage() {
               <div className="feature-label">Anonymous</div>
             </div>
           </div>
+          
+          {/* User Count Stats */}
+          {totalUsers > 0 && (
+            <div className="user-stats fade-in" style={{ animationDelay: '0.4s' }}>
+              <div className="stats-badge">
+                <span className="pulse-dot"></span>
+                <span className="stats-text"><span className="count-highlight">{totalUsers.toLocaleString()}</span> users have wiped their chats</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <style jsx>{`
@@ -398,6 +417,49 @@ export default function LoginPage() {
             border-top-color: white;
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
+          }
+
+          .user-stats {
+            margin-top: 32px;
+            display: flex;
+            justify-content: center;
+          }
+
+          .stats-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
+          }
+
+          .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+            animation: pulse-green 2s infinite;
+          }
+
+          @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+          }
+
+          .stats-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+          }
+
+          .count-highlight {
+            color: white;
+            font-weight: 800;
+            font-size: 14px;
           }
 
           @keyframes spin {

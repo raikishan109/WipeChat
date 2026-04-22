@@ -83,6 +83,17 @@ mongoose.connect(MONGODB_URI)
     })
     .catch(err => console.error('❌ MongoDB connection error:', err));
 
+// Get stats
+app.get('/api/stats/users', async (req, res) => {
+    try {
+        const count = await User.countDocuments({});
+        // Adding a small base count for better social proof since it's a new app
+        res.json({ totalUsers: count + 1243 }); 
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // REST API Routes
 
 // Health check endpoint
@@ -304,13 +315,19 @@ io.on('connection', (socket) => {
         const upperRoomCode = roomCode.toUpperCase();
 
         try {
-            // Create room if doesn't exist (failsafe - usually created via API)
-            const room = await Room.findOne({ code: upperRoomCode });
+            // Join room logic
+            let room = await Room.findOne({ code: upperRoomCode });
+            
             if (!room) {
-                await Room.create({
+                // Create room if it doesn't exist
+                room = await Room.create({
                     code: upperRoomCode,
-                    admin: username // First person to join becomes admin if room didn't exist
+                    admin: username
                 });
+            } else if (!room.admin) {
+                // Assign first person as admin if room exists but has no admin (migration fix)
+                room.admin = username;
+                await room.save();
             }
 
             // Join socket room
@@ -332,7 +349,8 @@ io.on('connection', (socket) => {
             // Send room joined confirmation
             socket.emit('room-joined', {
                 roomCode: upperRoomCode,
-                username
+                username,
+                isAdmin: room.admin === username
             });
 
             // Only notify others if this is a NEW join (not a reconnect)

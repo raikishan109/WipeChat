@@ -26,6 +26,7 @@ export default function ChatPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
@@ -39,22 +40,28 @@ export default function ChatPage() {
     
     const userData = JSON.parse(storedUser);
     setUsername(userData.username);
-    initializeChat(userData.username);
+    
+    if (!socketRef.current) {
+      initializeChat(userData.username);
+    }
 
     return () => {
-      if (socket) {
-        socket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
       }
     };
   }, [chatCode]);
 
   const initializeChat = async (currentUsername) => {
+    if (socketRef.current) return;
+    
     try {
       // Fetch room info to check for admin
       const roomResponse = await fetch(`${SERVER_URL}/api/rooms/${chatCode}`);
       if (roomResponse.ok) {
         const roomData = await roomResponse.json();
-        if (roomData.admin === (currentUsername || username)) {
+        if (roomData && roomData.admin === (currentUsername || username)) {
           setIsAdmin(true);
         }
       }
@@ -72,6 +79,8 @@ export default function ChatPage() {
         reconnection: true
       });
 
+      socketRef.current = newSocket;
+
       newSocket.on('connect', () => {
         console.log('Connected to server');
 
@@ -85,10 +94,18 @@ export default function ChatPage() {
       newSocket.on('room-joined', (data) => {
         console.log('Joined room:', data);
         setIsConnecting(false);
+        if (data.isAdmin) {
+          setIsAdmin(true);
+        }
       });
 
       newSocket.on('new-message', (message) => {
-        setMessages(prev => [...prev, message]);
+        setMessages(prev => {
+          // Check for duplicate message (based on _id or ID)
+          const isDuplicate = prev.some(m => (m._id && m._id === message._id) || (m.id && m.id === message.id));
+          if (isDuplicate) return prev;
+          return [...prev, message];
+        });
       });
 
       newSocket.on('user-count', (count) => {
@@ -354,8 +371,8 @@ export default function ChatPage() {
             />
             <button type="submit" className="btn btn-primary send-btn" disabled={isConnecting || !inputMessage.trim()}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
               </svg>
             </button>
           </form>
@@ -681,7 +698,7 @@ export default function ChatPage() {
         }
 
         .send-btn svg {
-          margin-left: 2px; /* Slight offset for paper plane icon alignment */
+          /* Centered arrow icon */
         }
 
         .error-page {
