@@ -17,9 +17,19 @@ export default function LoginPage() {
   useEffect(() => {
     // Fetch total users count
     fetch(`${SERVER_URL}/api/stats/users`)
-      .then(res => res.json())
-      .then(data => setTotalUsers(data.totalUsers))
-      .catch(err => console.error('Failed to fetch user count:', err));
+      .then(res => {
+        if (!res.ok) throw new Error('Fetch failed');
+        return res.json();
+      })
+      .then(data => {
+        if (data && typeof data.totalUsers === 'number') {
+          setTotalUsers(data.totalUsers);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch user count:', err);
+        setTotalUsers(0); // Fallback
+      });
   }, []);
 
   const handleSubmit = async (e) => {
@@ -184,7 +194,7 @@ export default function LoginPage() {
           <div className="user-stats fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="stats-badge">
               <span className="pulse-dot"></span>
-              <span className="stats-text"><span className="count-highlight">{totalUsers.toLocaleString()}</span> users have used WipeChat</span>
+              <span className="stats-text"><span className="count-highlight">{(totalUsers || 0).toLocaleString()}</span> users have used WipeChat</span>
             </div>
           </div>
         </div>

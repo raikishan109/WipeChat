@@ -86,13 +86,15 @@ mongoose.connect(MONGODB_URI)
 // Get stats
 app.get('/api/stats/users', async (req, res) => {
     try {
-        let stats = await Stats.findOne({ key: 'total_users' });
-        // If no stats found (new deployment), initialize with 6
-        if (!stats) {
-            stats = await Stats.create({ key: 'total_users', value: 6 });
-        }
+        // Use findOneAndUpdate with upsert:true to handle initialization safely
+        const stats = await Stats.findOneAndUpdate(
+            { key: 'total_users' },
+            { $setOnInsert: { value: 6 } },
+            { upsert: true, new: true }
+        );
         res.json({ totalUsers: stats.value });
     } catch (error) {
+        console.error('Stats API Error:', error);
         res.status(500).json({ error: error.message });
     }
 });
