@@ -86,9 +86,8 @@ mongoose.connect(MONGODB_URI)
 // Get stats
 app.get('/api/stats/users', async (req, res) => {
     try {
-        const count = await User.countDocuments({});
-        // Adding a small base count for better social proof since it's a new app
-        res.json({ totalUsers: count + 1243 }); 
+        const stats = await Stats.findOne({ key: 'total_users' });
+        res.json({ totalUsers: stats ? stats.value : 0 }); 
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -136,12 +135,19 @@ app.post('/api/auth/signup', async (req, res) => {
             return res.status(400).json({ error: 'Username already taken' });
         }
 
-        // Create user (password stored as plain text - add bcrypt in production!)
+        // Create user
         const user = await User.create({
             username,
             password,
             displayName: username
         });
+
+        // Update persistent total users count
+        await Stats.findOneAndUpdate(
+            { key: 'total_users' },
+            { $inc: { value: 1 } },
+            { upsert: true, new: true }
+        );
 
         res.json({
             success: true,

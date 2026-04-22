@@ -91,23 +91,6 @@ export default function LoginPage() {
     <div className="login-page-wrapper">
       <div className="login-page">
         <div className="login-container">
-          {/* Logo */}
-          <div className="logo-section fade-in">
-            <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-              <rect width="60" height="60" rx="15" fill="url(#wipeGradientLarge)" />
-              <path d="M16 24C16 21.7909 17.7909 20 20 20H40C42.2091 20 44 21.7909 44 24V34C44 36.2091 42.2091 38 40 38H32L24 43V38H20C17.7909 38 16 36.2091 16 34V24Z" fill="white" />
-              <path d="M33 23L31.8 26.5L28.5 27.5L31.8 28.5L33 32L34.2 28.5L37.5 27.5L34.2 26.5L33 23Z" fill="#8B5CF6" />
-              <defs>
-                <linearGradient id="wipeGradientLarge" x1="0" y1="0" x2="60" y2="60">
-                  <stop stopColor="#8b5cf6" />
-                  <stop offset="1" stopColor="#3b82f6" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <h1 className="logo-title"><span className="white-text">Wipe</span>Chat</h1>
-            <p className="logo-subtitle">Secure & Anonymous Messaging</p>
-          </div>
-
           {/* Login/Signup Form */}
           <div className="form-card card slide-in">
             <div className="form-header">
@@ -196,44 +179,13 @@ export default function LoginPage() {
                 </p>
               </div>
           </div>
-
-          {/* Features */}
-          <div className="features-grid fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="feature-item">
-              <div className="feature-icon" style={{ color: '#8b5cf6' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-              </div>
-              <div className="feature-label">Encrypted</div>
-            </div>
-            <div className="feature-item">
-              <div className="feature-icon" style={{ color: '#f59e0b' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-              </div>
-              <div className="feature-label">24h Auto-Delete</div>
-            </div>
-            <div className="feature-item">
-              <div className="feature-icon" style={{ color: '#3b82f6' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              </div>
-              <div className="feature-label">Anonymous</div>
-            </div>
-          </div>
           
           {/* User Count Stats */}
           {totalUsers > 0 && (
             <div className="user-stats fade-in" style={{ animationDelay: '0.4s' }}>
               <div className="stats-badge">
                 <span className="pulse-dot"></span>
-                <span className="stats-text"><span className="count-highlight">{totalUsers.toLocaleString()}</span> users have wiped their chats</span>
+                <span className="stats-text"><span className="count-highlight">{totalUsers.toLocaleString()}</span> users have used WipeChat</span>
               </div>
             </div>
           )}
@@ -242,7 +194,17 @@ export default function LoginPage() {
         <style jsx>{`
           .login-container {
             width: 100%;
-            max-width: 340px;
+            max-width: 380px;
+            padding: 10px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            animation: fadeIn 0.8s ease-out;
+          }
+
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
           }
 
           .logo-section {
@@ -276,12 +238,13 @@ export default function LoginPage() {
           }
 
           .form-card {
-            margin-bottom: 24px;
+            margin-bottom: 16px;
+            padding: 24px;
           }
 
           .form-header {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
           }
 
           .form-header h2 {
@@ -525,23 +488,6 @@ export default function LoginPage() {
             .btn {
               padding: 10px;
               font-size: 14px;
-            }
-
-            .features-grid {
-              grid-template-columns: repeat(3, 1fr);
-              gap: 6px;
-            }
-
-            .feature-item {
-              padding: 8px 2px;
-            }
-
-            .feature-icon {
-              font-size: 16px;
-            }
-
-            .feature-label {
-              font-size: 9px;
             }
           }
         `}</style>

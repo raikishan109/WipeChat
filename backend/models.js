@@ -92,8 +92,22 @@ const messageSchema = new mongoose.Schema({
 // Indexes for better query performance
 messageSchema.index({ roomCode: 1, timestamp: -1 });
 
+// Stats Schema (Persistent metadata)
+const statsSchema = new mongoose.Schema({
+    key: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    value: {
+        type: Number,
+        default: 0
+    }
+});
+
 const User = mongoose.model('User', userSchema);
 const Room = mongoose.model('Room', roomSchema);
 const Message = mongoose.model('Message', messageSchema);
+const Stats = mongoose.model('Stats', statsSchema);
 
-module.exports = { User, Room, Message };
+module.exports = { User, Room, Message, Stats };
