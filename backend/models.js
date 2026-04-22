@@ -45,6 +45,10 @@ const roomSchema = new mongoose.Schema({
         uppercase: true,
         trim: true
     },
+    admin: {
+        type: String,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now,

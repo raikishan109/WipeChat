@@ -183,6 +183,32 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
+// Guest Login
+app.post('/api/auth/guest', async (req, res) => {
+    try {
+        const randomId = Math.random().toString(36).substring(2, 7).toUpperCase();
+        const guestUsername = `Guest_${randomId}`;
+        
+        // Create guest user (with random dummy password)
+        const user = await User.create({
+            username: guestUsername,
+            password: Math.random().toString(36), // Dummy password
+            displayName: guestUsername
+        });
+
+        res.json({
+            success: true,
+            user: {
+                username: user.username,
+                displayName: user.displayName,
+                isGuest: true
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ============ ROOM ROUTES ============
 
 // Get room info
@@ -214,8 +240,15 @@ app.get('/api/rooms/:code/messages', async (req, res) => {
 // Create room
 app.post('/api/rooms', async (req, res) => {
     try {
-        const { code } = req.body;
-        const room = await Room.create({ code: code.toUpperCase() });
+        const { code, username } = req.body;
+        if (!code || !username) {
+            return res.status(400).json({ error: 'Code and username required' });
+        }
+        
+        const room = await Room.create({ 
+            code: code.toUpperCase(),
+            admin: username
+        });
         res.json(room);
     } catch (error) {
         if (error.code === 11000) {
@@ -231,6 +264,21 @@ app.post('/api/rooms', async (req, res) => {
 app.delete('/api/rooms/:code', async (req, res) => {
     try {
         const roomCode = req.params.code.toUpperCase();
+        const { username } = req.query;
+
+        if (!username) {
+            return res.status(400).json({ error: 'Username required' });
+        }
+
+        // Find room and verify admin
+        const room = await Room.findOne({ code: roomCode });
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found' });
+        }
+
+        if (room.admin !== username) {
+            return res.status(403).json({ error: 'Only the room creator can delete this room' });
+        }
 
         // Delete all messages in the room
         await Message.deleteMany({ roomCode });
@@ -256,12 +304,14 @@ io.on('connection', (socket) => {
         const upperRoomCode = roomCode.toUpperCase();
 
         try {
-            // Create room if doesn't exist
-            await Room.findOneAndUpdate(
-                { code: upperRoomCode },
-                { code: upperRoomCode },
-                { upsert: true, new: true }
-            );
+            // Create room if doesn't exist (failsafe - usually created via API)
+            const room = await Room.findOne({ code: upperRoomCode });
+            if (!room) {
+                await Room.create({
+                    code: upperRoomCode,
+                    admin: username // First person to join becomes admin if room didn't exist
+                });
+            }
 
             // Join socket room
             socket.join(upperRoomCode);

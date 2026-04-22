@@ -23,6 +23,8 @@ export default function ChatPage() {
   const [timeRemaining, setTimeRemaining] = useState(24 * 60 * 60 * 1000);
   const [username, setUsername] = useState('');
   const [typingUsers, setTypingUsers] = useState(new Set());
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -30,28 +32,33 @@ export default function ChatPage() {
   // Get username from localStorage on mount
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      setUsername(user.username);
-    } else {
-      // Fallback to random username if not logged in
-      setUsername(`User-${Math.random().toString(36).substr(2, 4).toUpperCase()}`);
+    if (!storedUser) {
+      router.push('/login');
+      return;
     }
-  }, []);
-
-  useEffect(() => {
-    if (!username) return; // Wait for username to be set
-    initializeChat();
+    
+    const userData = JSON.parse(storedUser);
+    setUsername(userData.username);
+    initializeChat(userData.username);
 
     return () => {
       if (socket) {
         socket.disconnect();
       }
     };
-  }, [chatCode, username]);
+  }, [chatCode]);
 
-  const initializeChat = async () => {
+  const initializeChat = async (currentUsername) => {
     try {
+      // Fetch room info to check for admin
+      const roomResponse = await fetch(`${SERVER_URL}/api/rooms/${chatCode}`);
+      if (roomResponse.ok) {
+        const roomData = await roomResponse.json();
+        if (roomData.admin === (currentUsername || username)) {
+          setIsAdmin(true);
+        }
+      }
+
       // Fetch existing messages
       const response = await fetch(`${SERVER_URL}/api/rooms/${chatCode}/messages`);
       if (response.ok) {
@@ -71,7 +78,7 @@ export default function ChatPage() {
         // Join room
         newSocket.emit('join-room', {
           roomCode: chatCode,
-          username
+          username: currentUsername || username
         });
       });
 
@@ -204,27 +211,25 @@ export default function ChatPage() {
     alert('Chat code copied to clipboard!');
   };
 
-  const deleteRoom = async () => {
-    const confirmDelete = confirm(
-      '⚠️ Are you sure you want to delete this room?\n\nThis will:\n• Delete all messages\n• Remove the room permanently\n• Disconnect all users\n\nThis action cannot be undone!'
-    );
-
-    if (!confirmDelete) return;
-
+  const handleDeleteRoom = async () => {
     try {
-      const response = await fetch(`${SERVER_URL}/api/rooms/${chatCode}`, {
+      console.log('API call to delete room:', chatCode);
+      const response = await fetch(`${SERVER_URL}/api/rooms/${chatCode}?username=${username}`, {
         method: 'DELETE'
       });
 
       if (response.ok) {
+        console.log('Room deleted successfully');
         alert('✅ Room deleted successfully!');
         router.push('/');
       } else {
-        throw new Error('Failed to delete room');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to delete room');
       }
     } catch (error) {
       console.error('Error deleting room:', error);
-      alert('❌ Failed to delete room. Please try again.');
+      alert(`❌ Failed to delete room: ${error.message}`);
+      setShowDeleteModal(false);
     }
   };
 
@@ -255,8 +260,8 @@ export default function ChatPage() {
         <div className="chat-header glass">
           <div className="header-left">
             <button className="btn-back" onClick={() => router.push('/')}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
               <span>Back</span>
             </button>
@@ -276,16 +281,45 @@ export default function ChatPage() {
               </p>
             </div>
           </div>
+
           <div className="header-right">
             <Timer timeRemaining={timeRemaining} />
-            <button className="btn-delete" onClick={deleteRoom} title="Delete Room">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-              <span>Delete Room</span>
-            </button>
+            {isAdmin && (
+              <button className="btn-delete" onClick={() => setShowDeleteModal(true)} title="Delete Room">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span>Delete Room</span>
+              </button>
+            )}
           </div>
         </div>
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="modal-backdrop fade-in">
+            <div className="modal-content scale-in glass">
+              <div className="modal-header">
+                <div className="modal-icon">⚠️</div>
+                <h2>Delete Room?</h2>
+              </div>
+              <div className="modal-body">
+                <p>Are you sure you want to delete this room and all its messages permanently?</p>
+                <div className="warning-box">
+                  This action cannot be undone.
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>
+                  Cancel
+                </button>
+                <button className="btn btn-danger" onClick={handleDeleteRoom}>
+                  Yes, Delete Room
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Messages */}
         <div className="chat-messages">
@@ -345,6 +379,7 @@ export default function ChatPage() {
         .header-right {
           display: flex;
           align-items: center;
+          justify-content: flex-end;
           gap: 12px;
         }
 
@@ -398,6 +433,113 @@ export default function ChatPage() {
 
         .btn-delete svg {
           flex-shrink: 0;
+        }
+
+        /* Modal Styles */
+        .modal-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(8px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          padding: 20px;
+        }
+
+        .modal-content {
+          width: 100%;
+          max-width: 400px;
+          background: var(--bg-secondary);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          padding: 32px;
+          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+          text-align: center;
+          margin-bottom: 24px;
+        }
+
+        .modal-icon {
+          font-size: 48px;
+          margin-bottom: 16px;
+        }
+
+        .modal-header h2 {
+          font-size: 24px;
+          font-weight: 700;
+          color: white;
+        }
+
+        .modal-body {
+          margin-bottom: 32px;
+          text-align: center;
+        }
+
+        .modal-body p {
+          color: var(--text-secondary);
+          margin-bottom: 16px;
+          line-height: 1.5;
+        }
+
+        .warning-box {
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.2);
+          color: #ef4444;
+          padding: 12px;
+          border-radius: var(--radius);
+          font-size: 14px;
+          font-weight: 600;
+        }
+
+        .modal-footer {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+
+        .btn-danger {
+          background: #ef4444;
+          color: white;
+          border: none;
+          padding: 12px;
+          border-radius: var(--radius);
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+          background: #dc2626;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-secondary {
+          background: var(--bg-tertiary);
+          color: var(--text-primary);
+          border: 1px solid var(--border);
+          padding: 12px;
+          border-radius: var(--radius);
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+          background: var(--bg-glass);
+        }
+
+        @keyframes pulse-red {
+          0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+          70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
         .btn-icon {
@@ -545,14 +687,24 @@ export default function ChatPage() {
         @media (max-width: 768px) {
           .chat-header {
             padding: 8px 12px;
-            display: grid;
-            grid-template-columns: auto 1fr auto;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid var(--border);
           }
 
           .header-left {
+            gap: 12px;
+          }
+
+          .room-info {
+            text-align: left;
+          }
+
+          .header-right {
+            flex-shrink: 0;
+            justify-content: flex-end;
             gap: 8px;
           }
 

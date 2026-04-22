@@ -47,6 +47,37 @@ export default function LoginPage() {
     }
   };
 
+  const handleGuestLogin = async () => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${SERVER_URL}/api/auth/guest`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Guest login failed');
+      }
+
+      // Store user in localStorage
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Redirect to home
+      router.push('/');
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="login-page-wrapper">
       <div className="login-page">
@@ -130,22 +161,31 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <div className="form-footer">
-              <p>
-                {isLogin ? "Don't have an account?" : 'Already have an account?'}
-                <button
-                  type="button"
-                  className="link-button"
-                  onClick={() => {
-                    setIsLogin(!isLogin);
-                    setError('');
-                  }}
-                  disabled={loading}
-                >
-                  {isLogin ? 'Sign Up' : 'Login'}
-                </button>
-              </p>
-            </div>
+              <button
+                type="button"
+                className="btn btn-guest w-full"
+                onClick={handleGuestLogin}
+                disabled={loading}
+              >
+                Continue as Guest
+              </button>
+
+              <div className="form-footer">
+                <p>
+                  {isLogin ? "Don't have an account?" : 'Already have an account?'}
+                  <button
+                    type="button"
+                    className="link-button"
+                    onClick={() => {
+                      setIsLogin(!isLogin);
+                      setError('');
+                    }}
+                    disabled={loading}
+                  >
+                    {isLogin ? 'Sign Up' : 'Login'}
+                  </button>
+                </p>
+              </div>
           </div>
 
           {/* Features */}
@@ -271,8 +311,23 @@ export default function LoginPage() {
             font-size: 14px;
           }
 
+          .btn-guest {
+            margin-top: 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+          }
+
+          .btn-guest:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+            color: var(--primary);
+          }
+
           .form-footer {
             margin-top: 24px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
             text-align: center;
           }
 
@@ -355,50 +410,69 @@ export default function LoginPage() {
             }
 
             .login-container {
-               padding: 20px 16px;
+               padding: 16px 12px;
             }
 
             .logo-section {
-              margin-bottom: 20px;
+              margin-bottom: 16px;
             }
 
             .logo-title {
-              font-size: 28px;
+              font-size: 24px;
             }
             
             .logo-section svg {
-              width: 50px;
-              height: 50px;
-              margin-bottom: 8px;
+              width: 40px;
+              height: 40px;
+              margin-bottom: 4px;
+            }
+
+            .form-header {
+              margin-bottom: 16px;
             }
 
             .form-header h2 {
-              font-size: 20px;
+              font-size: 18px;
             }
 
             .form-card {
-              padding: 20px 16px;
+              padding: 16px 12px;
+              margin-bottom: 16px;
+            }
+
+            .auth-form {
+              gap: 12px;
+            }
+
+            .form-group {
+              gap: 4px;
             }
 
             .input {
-              font-size: 16px; 
+              padding: 10px 12px;
+              font-size: 15px; 
+            }
+
+            .btn {
+              padding: 10px;
+              font-size: 14px;
             }
 
             .features-grid {
               grid-template-columns: repeat(3, 1fr);
-              gap: 8px;
+              gap: 6px;
             }
 
             .feature-item {
-              padding: 10px 4px;
+              padding: 8px 2px;
             }
 
             .feature-icon {
-              font-size: 18px;
+              font-size: 16px;
             }
 
             .feature-label {
-              font-size: 10px;
+              font-size: 9px;
             }
           }
         `}</style>

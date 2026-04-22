@@ -36,12 +36,33 @@ export default function HomePage() {
     router.push('/login');
   };
 
-  const handleCreateRoom = () => {
+  const handleCreateRoom = async () => {
     setIsCreating(true);
     const newCode = generateChatCode(12);
-    setTimeout(() => {
+    
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/rooms`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          code: newCode,
+          username: user.username
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create room');
+      }
+
       router.push(`/chat/${newCode}`);
-    }, 300);
+    } catch (error) {
+      console.error('Error creating room:', error);
+      alert('Failed to create chat room. Please try again.');
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleJoinRoom = (e) => {
